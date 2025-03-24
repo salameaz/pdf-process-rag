@@ -5,4 +5,4 @@ def extract_text_from_pdf(file_path):
 
     loader = PyPDFLoader(file_path)
 
-    return loader.load_and_split()
+    return loader.alazy_load()

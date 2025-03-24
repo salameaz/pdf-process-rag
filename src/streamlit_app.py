@@ -1,37 +1,103 @@
-import streamlit as st
-from src.pdf_processing.text_extraction import extract_text_from_pdf
+from __future__ import annotations
+from typing import Literal, TypedDict
+import asyncio
 import os
-import tempfile
+import streamlit as st
+from google import genai
+from src.knowledge_base.vector_store import get_vector_store
+
+from dotenv import load_dotenv
+load_dotenv()
+API_KEY = os.getenv("API_KEY")
 
 
-def main():
-    st.title("PDF Chatbot")
+class ChatMessage(TypedDict):
+    """Format of messages sent to the browser/API."""
 
-    uploaded_file = st.file_uploader("Upload a PDF file", type=["pdf"])
-    pages = []
+    role: Literal['user', 'model']
+    timestamp: str
+    content: str
+
+
+def display_message_part(part):
+    """
+    Display a single part of a message in the Streamlit UI.
+    Customize how you display system prompts, user prompts,
+    tool calls, tool returns, etc.
+    """
+    # system-prompt
+    if part.part_kind == 'system-prompt':
+        with st.chat_message("system"):
+            st.markdown(f"**System**: {part.content}")
+    # user-prompt
+    elif part.part_kind == 'user-prompt':
+        with st.chat_message("user"):
+            st.markdown(part.content)
+    # text
+    elif part.part_kind == 'text':
+        with st.chat_message("assistant"):
+            st.markdown(part.content)
+
+
+async def rag_agent(user_input: str, vector_store):
+    """
+    run a wraper around gemini model to get the response, first get the vector of the user input, build a query and get the response
+    """
+    client = genai.Client(api_key=API_KEY)
+    llm_model_name = "gemini-2.0-flash"
+
+    docs = vector_store.similarity_search(user_input, k=2)
+    context = ''
+    for doc in docs:
+        context += f'Page {doc.metadata["page"]}: {doc.page_content[:300]}\n'
+
+    query = f'{user_input}\n{context}'
+
+    response = await client.models.generate_content(
+        model=llm_model_name,
+        contents=query
+    )
+
+    return response
+
+
+async def main():
+    st.title("PDF AI  RAG")
+    st.write("Please upload a PDF file to get started.")
+
+    uploaded_file = st.file_uploader("Choose a PDF file", type="pdf", accept_multiple_files=False)
 
     if uploaded_file is not None:
-        # Create a temporary directory to save the uploaded file
-        with tempfile.TemporaryDirectory() as tmpdir:
-            file_path = os.path.join(tmpdir, uploaded_file.name)
+        st.write("Processing file...")
 
-            # Save the uploaded file to the temporary location
-            with open(file_path, "wb") as f:
-                f.write(uploaded_file.getvalue())
+        try:
+            vector_store = get_vector_store(uploaded_file)
+            st.write("File processed successfully.")
+        except Exception as e:
+            st.write("An error occurred while processing the file.")
+            st.write(e)
 
-            st.write(f"File uploaded and saved temporarily to: {file_path}")
-            try:
-                pages = extract_text_from_pdf(file_path)
-            except Exception as e:
-                st.error(f"Error loading PDF: {e}")
-            # You can now proceed with chunking, embedding, and RAG using the 'pages' list
-            # For example:
-            # text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
-            # chunks = text_splitter.split_documents(pages)
-            # embeddings = OpenAIEmbeddings()
-            # knowledge_base = FAISS.from_documents(chunks, embeddings)
-        print(pages)
+    # Initialize chat history in session state if not present
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    # Display all messages from the conversation so far
+
+    # Chat input for the user
+    user_input = st.chat_input("What questions do you have about the uploaded PDF?")
+
+    if user_input:
+        # We append a new request to the conversation explicitly
+
+        # Display user prompt in the UI
+        with st.chat_message("user"):
+            st.markdown(user_input)
+
+        # Display the assistant's partial response while streaming
+        with st.chat_message("assistant"):
+            # Actually run the agent now, streaming the text
+            await rag_agent(user_input, vector_store)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

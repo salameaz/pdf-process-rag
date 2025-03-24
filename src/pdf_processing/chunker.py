@@ -1,7 +1,7 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
-def split_documents(documents):
+def chunk_documents(documents):
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=800,
         chunk_overlap=80,
@@ -9,7 +9,9 @@ def split_documents(documents):
         is_separator_regex=False,
     )
 
-    return text_splitter.split_documents(documents)
+    chunks = text_splitter.split_documents(documents)
+
+    return chunks
 
 
 def restructure_chunks(chunks):
