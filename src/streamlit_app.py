@@ -1,12 +1,12 @@
 from __future__ import annotations
 from typing import Literal, TypedDict
-import asyncio
 import os
 import streamlit as st
 from google import genai
-from src.knowledge_base.vector_store import get_vector_store
-
+from knowledge_base.vector_store import get_vector_store
 from dotenv import load_dotenv
+
+
 load_dotenv()
 API_KEY = os.getenv("API_KEY")
 
@@ -39,7 +39,7 @@ def display_message_part(part):
             st.markdown(part.content)
 
 
-async def rag_agent(user_input: str, vector_store):
+def rag_agent(user_input: str, vector_store):
     """
     run a wraper around gemini model to get the response, first get the vector of the user input, build a query and get the response
     """
@@ -53,7 +53,7 @@ async def rag_agent(user_input: str, vector_store):
 
     query = f'{user_input}\n{context}'
 
-    response = await client.models.generate_content(
+    response = client.models.generate_content(
         model=llm_model_name,
         contents=query
     )
@@ -61,7 +61,7 @@ async def rag_agent(user_input: str, vector_store):
     return response
 
 
-async def main():
+def main():
     st.title("PDF AI  RAG")
     st.write("Please upload a PDF file to get started.")
 
@@ -69,9 +69,10 @@ async def main():
 
     if uploaded_file is not None:
         st.write("Processing file...")
-
+        st.spinner()
         try:
-            vector_store = get_vector_store(uploaded_file)
+            vector_store = get_vector_store(uploaded_file.read())
+            st.session_state.vector_store = vector_store
             st.write("File processed successfully.")
         except Exception as e:
             st.write("An error occurred while processing the file.")
@@ -96,8 +97,9 @@ async def main():
         # Display the assistant's partial response while streaming
         with st.chat_message("assistant"):
             # Actually run the agent now, streaming the text
-            await rag_agent(user_input, vector_store)
+            response = rag_agent(user_input, st.session_state.vector_store)
+            st.markdown(response)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
