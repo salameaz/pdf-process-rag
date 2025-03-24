@@ -16,10 +16,12 @@ async def extract_text_from_pdf(file_path):
 # test the function
 
 async def test_extraction():
-    file_path = "src/documents/Athletic-Training-Handbook.pdf"
+    file_path = "src/documents/scanned_example_1.pdf"
     pages = await extract_text_from_pdf(file_path=file_path)  # Await the function
 
     print(f"{pages[0].metadata}\n")
-    print(pages[0].page_content)
+
+    for page in pages:
+        print(page.page_content)
 
 asyncio.run(test_extraction())
