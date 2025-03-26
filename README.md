@@ -3,7 +3,7 @@
 PDF Process RAG is a Python-based application that enables users to upload PDF files, extract their content, and interact with the extracted data using a Retrieval-Augmented Generation (RAG) approach. The application leverages vector embeddings and a language model to answer user queries based on the uploaded PDF content.
 
 ## Features
-- Extract text from PDF files asynchronously.
+- Extract text from PDF files, text based and scanned versions.
 - Chunk and process extracted text for efficient querying.
 - Generate vector embeddings for document content.
 - Perform similarity searches on document embeddings.
@@ -77,6 +77,11 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contributing
 Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
+
+## Future Enhancements
+
+* Explore Dockerizing the application for easier deployment and portability.
+* Adding quote reference from the PDF.
 
 ## Acknowledgments
 - [LangChain](https://github.com/hwchase17/langchain) for document loaders and vector store utilities.

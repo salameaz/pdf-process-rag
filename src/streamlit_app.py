@@ -46,17 +46,23 @@ def rag_agent(user_input: str, vector_store):
     client = genai.Client(api_key=API_KEY)
     llm_model_name = "gemini-2.0-flash"
 
-    docs = vector_store.similarity_search(user_input, k=2)
-    context = ''
+    docs = vector_store.similarity_search(user_input, k=1)
+    context = ""
     for doc in docs:
-        context += f'Page {doc.metadata["page"]}: {doc.page_content[:300]}\n'
+        # adding to the context 2/3 of the page content
+        page_content = doc.page_content
+
+        context += page_content
 
     query = f'{user_input}\n{context}'
 
-    response = client.models.generate_content(
+    genai_response = client.models.generate_content(
         model=llm_model_name,
         contents=query
     )
+
+    if genai_response and genai_response.candidates:
+        response = genai_response.candidates[0].content.parts[0].text
 
     return response
 
@@ -99,6 +105,7 @@ def main():
             # Actually run the agent now, streaming the text
             response = rag_agent(user_input, st.session_state.vector_store)
             st.markdown(response)
+            # st.text(response)
 
 
 if __name__ == "__main__":
