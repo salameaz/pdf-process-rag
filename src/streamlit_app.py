@@ -4,8 +4,8 @@ import os
 import streamlit as st
 from knowledge_base.vector_store import get_vector_store
 from dotenv import load_dotenv
-from rag import rag
-
+from query_generator import query_generator
+from google import genai
 
 load_dotenv()
 API_KEY = os.getenv("API_KEY")
@@ -58,6 +58,14 @@ def main():
                     st.write("An error occurred while processing the file.")
                     st.write(e)
 
+    try:
+        client = genai.Client(api_key=API_KEY)
+        llm_model_name = "gemini-2.0-flash"
+        chat = client.chats.create(model=llm_model_name)
+    except Exception as e:
+        st.write("An error occurred while creating the chat.")
+        st.write(e)
+
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
@@ -74,7 +82,8 @@ def main():
             st.markdown(user_input)
 
         with st.chat_message("assistant"):
-            response = rag(user_input, st.session_state.vector_store)
+            query = query_generator(user_input, st.session_state.vector_store)
+            response = chat.send_message(query).text
             st.markdown(response)
 
         st.session_state.messages.append({"role": "assistant", "content": response})
