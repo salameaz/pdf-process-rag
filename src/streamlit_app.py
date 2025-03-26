@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Literal, TypedDict
 import os
 import streamlit as st
 from knowledge_base.vector_store import get_vector_store
@@ -9,34 +8,6 @@ from google import genai
 
 load_dotenv()
 API_KEY = os.getenv("API_KEY")
-
-
-class ChatMessage(TypedDict):
-    """Format of messages sent to the browser/API."""
-
-    role: Literal['user', 'model']
-    timestamp: str
-    content: str
-
-
-def display_message_part(part):
-    """
-    Display a single part of a message in the Streamlit UI.
-    Customize how you display system prompts, user prompts,
-    tool calls, tool returns, etc.
-    """
-    # system-prompt
-    if part.part_kind == 'system-prompt':
-        with st.chat_message("system"):
-            st.markdown(f"**System**: {part.content}")
-    # user-prompt
-    elif part.part_kind == 'user-prompt':
-        with st.chat_message("user"):
-            st.markdown(part.content)
-    # text
-    elif part.part_kind == 'text':
-        with st.chat_message("assistant"):
-            st.markdown(part.content)
 
 
 def main():

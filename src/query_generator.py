@@ -1,6 +1,6 @@
 def query_generator(user_input: str, vector_store):
 
-    docs = vector_store.similarity_search(user_input, k=2)
+    docs = vector_store.similarity_search(user_input, k=6)
     context = ""
     for doc in docs:
         # adding to the context 2/3 of the page content
@@ -22,9 +22,9 @@ def query_generator(user_input: str, vector_store):
 
     ---------------------
     Instructions:
-    1. Thoroughly analyze the provided PDF context.
-    2. Answer the question using the PDF as the main source.
-    3. Only reference external information if the PDF does not cover the question adequately.
+    1. Base your answer entirely on the information from the PDF document.
+    2. Use external knowledge strictly as a last resort.
+    3. Do not include meta commentary or phrases such as "Based on the provided PDF context" in your answer.
     4. Provide citations where applicable.
     """
 
