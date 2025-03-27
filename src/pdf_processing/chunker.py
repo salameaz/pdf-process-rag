@@ -12,12 +12,3 @@ def chunk_documents(documents):
     chunks = text_splitter.split_documents(documents)
 
     return chunks
-
-
-def restructure_chunks(chunks):
-    chunks_dicts = []
-
-    for chunk in chunks:
-        chunks_dicts.append({"metadata": chunk.metadata, "page_content": chunk.page_content})
-
-    return chunks_dicts
