@@ -3,7 +3,7 @@
 PDF Process RAG is a Python-based application that enables users to upload PDF files, extract their content, and interact with the extracted data using a Retrieval-Augmented Generation (RAG) approach. The application leverages vector embeddings and a language model to answer user queries based on the uploaded PDF content.
 
 ## Features
-- Extract text from PDF files, text based and scanned versions.
+- Extract text from PDF files, text-based and scanned versions.
 - Chunk and process extracted text for efficient querying.
 - Generate vector embeddings for document content.
 - Perform similarity searches on document embeddings.
@@ -35,9 +35,9 @@ PDF Process RAG is a Python-based application that enables users to upload PDF f
      ```
 
 ## Usage
-1. Run the Streamlit application:
+1. Run the application:
    ```bash
-   streamlit run src/streamlit_app.py
+   python -m src
    ```
 
 2. Upload a PDF file through the web interface.
@@ -52,25 +52,19 @@ Defines a utility function to load the embedding model (`sentence-transformers/a
 Handles the creation of an in-memory vector store for document embeddings. Extracts text from PDFs and generates embeddings.
 
 ### `src/pdf_processing/text_extraction.py`
-Provides an asynchronous function to extract text from PDF files using `PyPDFLoader`.
+Extracts text from PDF files using `PyPDFLoader`.
 
 ### `src/pdf_processing/chunker.py`
 Splits extracted text into smaller chunks for efficient processing and querying.
 
-### `src/pdf_processing/structure_parser.py`
-Currently empty. Reserved for future functionality related to parsing document structure.
-
-### `src/retrieval.py`
-Currently empty. Reserved for future functionality related to retrieval mechanisms.
-
-### `src/rag.py`
-Currently empty. Reserved for future functionality related to the RAG pipeline.
+### `src/query_generator.py`
+Generates a query prompt for the language model based on user input and the context retrieved from the vector store.
 
 ### `src/streamlit_app.py`
 The main entry point for the Streamlit application. Handles file uploads, vector store creation, and user interaction with the RAG system.
 
 ### `src/__init__.py`
-Empty file to mark the `src` directory as a Python package.
+Provides a script to run the Streamlit application.
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
@@ -79,9 +73,8 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
 
 ## Future Enhancements
-
-* Explore Dockerizing the application for easier deployment and portability.
-* Adding quote reference from the PDF.
+- Explore Dockerizing the application for easier deployment and portability.
+- Add quote references from the PDF.
 
 ## Acknowledgments
 - [LangChain](https://github.com/hwchase17/langchain) for document loaders and vector store utilities.
