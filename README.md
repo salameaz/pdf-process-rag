@@ -12,7 +12,7 @@ PDF Process RAG is a Python-based application that enables users to upload PDF f
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/pdf-process-rag.git
+   git clone https://github.com/salameaz/pdf-process-rag.git
    cd pdf-process-rag
    ```
 
@@ -29,7 +29,7 @@ PDF Process RAG is a Python-based application that enables users to upload PDF f
 
 4. Set up environment variables:
    - Rename the `.env.example` file to `.env`
-   - Add your API key for the language model:
+   - Add your API key for Gemini model from google aistudio:
      ```
      API_KEY=your_api_key_here
      ```
@@ -43,6 +43,21 @@ PDF Process RAG is a Python-based application that enables users to upload PDF f
 2. Upload a PDF file through the web interface.
 
 3. Ask questions about the uploaded PDF, and the application will provide answers based on the document content.
+
+## Known Issue: "RuntimeError: no running event loop"
+You may see an error message like this when running the app:
+```
+pdf-process-rag\venv\Lib\site-packages\streamlit\web\bootstrap.py", line 347, in run
+    if asyncio.get_running_loop().is_running():
+       ~~~~~~~~~~~~~~~~~~~~~~~~^^
+RuntimeError: no running event loop
+...
+RuntimeError: Tried to instantiate class '__path__._path', but it does not exist! Ensure that it is registered via torch::class_
+```
+
+This error comes from Streamlit's internal file watcher and does not affect the app's functionality. 
+
+I have researched several methods to resolve this issue but have not found a definitive solution. If you have any suggestions, feel free to share them!
 
 ## Codebase Overview
 ### `src/knowledge_base/embedding_utils.py`
@@ -63,8 +78,8 @@ Generates a query prompt for the language model based on user input and the cont
 ### `src/streamlit_app.py`
 The main entry point for the Streamlit application. Handles file uploads, vector store creation, and user interaction with the RAG system.
 
-### `src/__init__.py`
-Provides a script to run the Streamlit application.
+### `src/__main__.py`
+Acts as the entry point for the application. It launches the Streamlit application (`streamlit_app.py`) and handles command-line arguments and basic error handling.
 
 ## License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
@@ -75,8 +90,3 @@ Contributions are welcome! Please open an issue or submit a pull request for any
 ## Future Enhancements
 - Explore Dockerizing the application for easier deployment and portability.
 - Add quote references from the PDF.
-
-## Acknowledgments
-- [LangChain](https://github.com/hwchase17/langchain) for document loaders and vector store utilities.
-- [Streamlit](https://streamlit.io/) for the web interface.
-- [Sentence Transformers](https://www.sbert.net/) for embedding models.
