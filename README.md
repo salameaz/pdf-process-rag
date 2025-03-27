@@ -1,13 +1,13 @@
 # PDF Process RAG
 
-PDF Process RAG is a Python-based application that enables users to upload PDF files, extract their content, and interact with the extracted data using a Retrieval-Augmented Generation (RAG) approach. The application leverages vector embeddings and a language model to answer user queries based on the uploaded PDF content.
+PDF Process RAG is a Python-based application that enables users to upload PDF files, extract their content, and interact with the extracted data using a Retrieval-Augmented Generation (RAG) approach. The application leverages vector embeddings and a large language model to answer user queries based on the uploaded PDF content.
 
 ## Features
 - Extract text from PDF files, text-based and scanned versions.
 - Chunk and process extracted text for efficient querying.
 - Generate vector embeddings for document content.
 - Perform similarity searches on document embeddings.
-- Use a language model to answer user queries based on document context.
+- Use a large language model to answer user queries based on document context.
 
 ## Installation
 1. Clone the repository:
@@ -73,7 +73,7 @@ Extracts text from PDF files using `PyPDFLoader`.
 Splits extracted text into smaller chunks for efficient processing and querying.
 
 ### `src/query_generator.py`
-Generates a query prompt for the language model based on user input and the context retrieved from the vector store.
+Generates a query prompt for the large language model based on user input and the context retrieved from the vector store.
 
 ### `src/streamlit_app.py`
 The main entry point for the Streamlit application. Handles file uploads, vector store creation, and user interaction with the RAG system.
