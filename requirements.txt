@@ -6,3 +6,4 @@ langchain-core
 langchain-community
 google-genai
 pypdf
+sentence-transformers
